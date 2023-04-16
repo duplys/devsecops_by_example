@@ -1,6 +1,38 @@
 # OWASP Dependency Check
 
+[OWASP's `dependency-check`](https://jeremylong.github.io/DependencyCheck/) scans software to identify the use of known vulnerable components. 
 You can get `dependency-check` from its [GitHub repository](https://jeremylong.github.io/DependencyCheck/).
+
+## Working principle
+[`dependency-check` works](https://jeremylong.github.io/DependencyCheck/general/internals.html) by scanning files using so-called *analyzers*. The information collected during the scan is referred to as *evidence*. There are three types of evidence collected: 
+* vendor
+* product
+* version.
+
+As an example, the `JarAnalyzer` collects information from the Manifest `pom.xml` and the package names within the JAR files scanned.
+
+Each CVE Entry in the NVD CVE database has a list of vulnerable software:
+```xml
+<entry id="CVE-2012-5055">
+
+-- snip --
+
+    <vuln:vulnerable-software-list>
+        <vuln:product>cpe:/a:vmware:springsource_spring_security:3.1.2</vuln:product>
+        <vuln:product>cpe:/a:vmware:springsource_spring_security:2.0.4</vuln:product>
+        <vuln:product>cpe:/a:vmware:springsource_spring_security:3.0.1</vuln:product>
+    </vuln:vulnerable-software-list>
+
+-- snip --
+
+</entry>
+```
+
+These [Common Platform Enumeration (CPE) entries](https://en.wikipedia.org/wiki/Common_Platform_Enumeration) are read "cpe:/[Entry Type]:[Vendor]:[Product]:[Version]:[Revision]:…". `dependency-check` downloads the CPE data, stores it in a Lucene Index, and compares the collected evidence to the Lucene CPE Index. If there is a match, the associated CVE entries are added to the report.
+
+The evidence is rated using confidence levels "low", "medium", "high", and "highest". When the CPE is determined it is given a confidence level that is equal to the lowest level confidence level of evidence used during identification. As a result, because the CPE identification might be incorrect, `dependency-check` report can contain both false positives and false negatives.
+
+Currently, `dependency-check` does not use file hashes for identification, the rationale being that if the dependency is built from source, the hash will likely not match the published hash. As a result, one would need a hash database for known vulnerabilities. The authors of `dependency-check` made a deliberate design decision to avoid maintaining such a database (however, [they state](https://jeremylong.github.io/DependencyCheck/general/thereport.html) that a future enhancement may add some hash matching for very common libraries like Spring or Struts).
 
 ## Installation
 You can download the current `dependency-check` version and unpack it from https://github.com/jeremylong/DependencyCheck/releases. Simply unzip the file and you're good to go. Assuming you are on a Linux operating system, you run the tool by executing `dependency-check/bin/dependency-check.sh`.

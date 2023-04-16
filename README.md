@@ -1,2 +1,2 @@
 # DevSecOps by Example
-Simple examples how selected FOSS tools can be integrated into DevSecOps pipelines. Mainly for educational purposes.
+This repository contains simple examples how to use specific FOSS tools in DevSecOps. The examples are created mainly for educational purposes.
