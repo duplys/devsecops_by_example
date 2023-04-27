@@ -42,27 +42,12 @@ $ sudo apt-get install cppcheck -y
 ```C
 #include <stdio.h>
 
-void foo(int x)
-{
-    int buf[10];
-    if (x == 1000)
-        buf[x] = 0; // <- ERROR
-}
-
-void bar(int x)
-{
-    int buf[10];
-    buf[x] = 0; // <- ERROR
-    if (x == 1000) {}
-}
-
 int main() {
-    char a[10];
-    a[10] = 0;
+  char a[10];
+  a[10] = 0;
 
-    printf("Hello world!\n");
-    
-    return 0;
+  printf("Hello world!\n");
+  return 0;
 }
 ``` 
 
